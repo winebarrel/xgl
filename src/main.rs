@@ -1,6 +1,7 @@
 mod cli;
 mod xgl;
 
+use anyhow::Result;
 use cli::parse_opts;
 use serde::Serialize;
 use std::fs;
@@ -19,16 +20,16 @@ struct Line<'a> {
   argument: &'a str,
 }
 
-fn main() {
+fn main() -> Result<()> {
   let opts = parse_opts();
 
   if opts.file == "-" {
     let reader = io::BufReader::new(io::stdin());
-    parse(reader, print_line).unwrap();
+    parse(reader, print_line)
   } else {
-    let f = fs::File::open(opts.file).unwrap();
+    let f = fs::File::open(opts.file)?;
     let reader = io::BufReader::new(f);
-    parse(reader, print_line).unwrap();
+    parse(reader, print_line)
   }
 }
 
