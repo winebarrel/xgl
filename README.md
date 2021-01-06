@@ -2,6 +2,8 @@
 
 MySQL General Query Log parser.
 
+[![Build Status](https://github.com/winebarrel/xgl/workflows/test/badge.svg?branch=main)](https://github.com/winebarrel/xgl/actions)
+
 ## Usage
 
 ```
