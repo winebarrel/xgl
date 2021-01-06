@@ -1,5 +1,6 @@
+PROGRAM := xgl
 SHELL   := /bin/bash
-VERSION := v$(shell cargo metadata --format-version=1 | jq -r '.packages[] | select(.name == "xjr").version')
+VERSION := v$(shell cargo metadata --format-version=1 | jq -r '.packages[] | select(.name == "$(PROGRAM)").version')
 TARGET  := x86_64-apple-darwin
 
 .PHONY: all
@@ -11,8 +12,8 @@ build:
 
 .PHONY: package
 package: clean build
-	gzip target/$(TARGET)/release/xjr -c > xjr_$(VERSION)_$(TARGET).gz
-	sha1sum xjr_$(VERSION)_$(TARGET).gz > xjr_$(VERSION)_$(TARGET).gz.sha1sum
+	gzip target/$(TARGET)/release/$(PROGRAM) -c > $(PROGRAM)_$(VERSION)_$(TARGET).gz
+	sha1sum $(PROGRAM)_$(VERSION)_$(TARGET).gz > $(PROGRAM)_$(VERSION)_$(TARGET).gz.sha1sum
 
 .PHONY: clean
 clean:

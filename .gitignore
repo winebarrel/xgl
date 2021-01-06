@@ -1,1 +1,4 @@
 /target
+/xgl
+*.gz
+*.gz.sha1sum
