@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use anyhow::Result;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -33,10 +36,10 @@ static RE_IGNORE: Lazy<Regex> = Lazy::new(|| {
   .unwrap()
 });
 
-pub fn parse<T, F>(reader: T, cb: F) -> Result<()>
+pub fn parse<T, F>(reader: T, mut cb: F) -> Result<()>
 where
   T: io::prelude::BufRead,
-  F: Fn(&Header, &str),
+  F: FnMut(&Header, &str),
 {
   let mut re: Option<&Lazy<Regex>> = None;
   let mut header: Option<Header> = None;
@@ -72,7 +75,7 @@ where
       }
 
       if let Some(h) = &header {
-        cb(&h, args.join(",").trim());
+        cb(&h, args.join("").trim());
       }
 
       args.clear();
@@ -90,7 +93,7 @@ where
   })?;
 
   if let Some(h) = &header {
-    cb(&h, args.join(",").trim_end_matches("\n"));
+    cb(&h, args.join("").trim_end_matches("\n"));
   }
 
   Ok(())
