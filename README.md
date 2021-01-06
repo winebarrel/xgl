@@ -1,6 +1,6 @@
 # xgl
 
-genlog is MySQL General Query Log parser.
+MySQL General Query Log parser.
 
 ## Usage
 
