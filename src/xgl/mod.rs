@@ -31,7 +31,7 @@ static RE_IGNORE: Lazy<Regex> = Lazy::new(|| {
     r"\S+, Version: \S+ (.+). started with:",
     r"|Tcp port: \d+  Unix socket: \S+",
     r"|Time                 Id Command    Argument",
-    r")$"
+    ")\n$"
   ))
   .unwrap()
 });
