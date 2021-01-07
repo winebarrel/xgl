@@ -40,7 +40,7 @@ fn test_parse_mysql56_log() {
   let reader = b"/usr/local/opt/mysql@5.6/bin/mysqld, Version: 5.6.50-log (Homebrew). started with:
 Tcp port: 0  Unix socket: (null)
 Time                 Id Command    Argument
-210106 21:05:35	    1 Connect	root@localhost on
+210106 21:05:35\t    1 Connect\troot@localhost on
 \t\t    1 Query\tselect @@version_comment limit 1
 \t\t    1 Query\tselect USER()
 210106 21:05:50\t    1 Query\tselect 1
@@ -67,6 +67,37 @@ from dual
         "select 1\nfrom dual"
       ),
       r#"Header { time: "210106 21:05:59", id: "1", command: "Quit" } "#,
+    ]
+  );
+}
+
+#[test]
+fn test_ignore() {
+  let reader = b"2020-12-24T01:00:00.887610Z109057559 Query\tSET @@sql_log_bin=off ;
+2020-12-24T01:00:00.887644Z109057559 Query\tFLUSH GENERAL LOGS ;
+/rdsdbbin/oscar/bin/mysqld, Version: 5.7.12-log (MySQL Community Server (GPL)). started with:
+Tcp port: 3306  Unix socket: /tmp/mysql.sock
+Time                 Id Command    Argument
+2020-12-24T01:00:00.892590Z159757386 Query\tselect * from
+store
+limit 1
+" as &[u8];
+  let mut jsonl = vec![];
+
+  parse(reader, |header, arg| {
+    jsonl.push(format!("{:?} {}", header, arg));
+  })
+  .unwrap();
+
+  assert_eq!(
+    jsonl,
+    vec![
+      r#"Header { time: "2020-12-24T01:00:00.887610Z", id: "109057559", command: "Query" } SET @@sql_log_bin=off ;"#,
+      r#"Header { time: "2020-12-24T01:00:00.887644Z", id: "109057559", command: "Query" } FLUSH GENERAL LOGS ;"#,
+      concat!(
+        r#"Header { time: "2020-12-24T01:00:00.892590Z", id: "159757386", command: "Query" } "#,
+        "select * from\nstore\nlimit 1"
+      ),
     ]
   );
 }
